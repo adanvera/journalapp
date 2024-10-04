@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom"
 import { AuthLayout } from "../layout/AuthLayout"
 import { useForm } from "../../hooks"
 import { useDispatch, useSelector } from "react-redux"
-import { AppDispatch } from "../../store"
+import { AppDispatch, RootState } from "../../store"
 import { checkingCredentials, startGoogleSignIn } from "../../store/auth"
 import { useMemo } from "react"
 
@@ -12,7 +12,7 @@ export const LoginPage = () => {
 
   const { email, password, onInputChange } = useForm({ email: '', password: '' });
   const dispatch: AppDispatch = useDispatch() // Type the dispatch
-  const { status } = useSelector(state => state.auth) // Type the state
+  const { status } = useSelector((state: RootState) => state.auth) // Type the state
   const isAuthenticating = useMemo(() => status === 'checking', [status])
 
   const onSubmit = (e: React.FormEvent) => {
