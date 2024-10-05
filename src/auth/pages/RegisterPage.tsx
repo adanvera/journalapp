@@ -1,107 +1,126 @@
-import { Button, Grid, TextField, Typography } from "@mui/material"
-import { AuthLayout } from "../layout/AuthLayout"
-import { Link } from "react-router-dom"
-import { Link as RouterLink } from "react-router-dom"
-import { useForm } from "../../hooks"
-import { useState } from "react"
-
-interface ValidationRule {
-  (value: string): boolean;
-}
-
-interface FormValidations {
-  [key: string]: [ValidationRule, string];
-  email: [ValidationRule, string];
-  displayName: [ValidationRule, string];
-  password: [ValidationRule, string];
-}
-
-const formValidations: FormValidations = {
-  email: [(value) => value.includes('@'), 'Email no es valido'],
-  displayName: [(value) => value.length >= 1, 'Nombre es requerido'],
-  password: [(value) => value.length > 5, 'La contraseña debe tener al menos 6 caracteres']
-}
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
+import { AuthLayout } from '../layout/AuthLayout';
+import { useForm } from '../../hooks';
+import { RootState, startCreatingUserWithEmailPassword } from '../../store';
 
 const formData = {
   email: '',
-  displayName: '',
   password: '',
+  displayName: ''
+}
+
+interface FormValidations {
+  [key: string]: [(value: string) => boolean, string];
+  email: [(value: string) => boolean, string];
+  password: [(value: string) => boolean, string];
+  displayName: [(value: string) => boolean, string];
+}
+
+const formValidations: FormValidations = {
+  email: [(value) => value.includes('@'), 'El correo debe de tener una @'],
+  password: [(value) => value.length >= 6, 'El password debe de tener más de 6 letras.'],
+  displayName: [(value) => value.length >= 1, 'El nombre es obligatorio.'],
 }
 
 export const RegisterPage = () => {
 
-  const [formSubmited, setFormSubmited] = useState(false);
+  const dispatch = useDispatch();
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const { status, errorMessage } = useSelector((state: RootState) => state.auth);
+  const isCheckingAuthentication = useMemo(() => status === 'checking', [status]);
+  const [showErrorMessages, setShowErrorMessages] = useState(false);
 
   const {
-    email, emailValid,
-    displayName, displayNameValid,
-    password, passwordValid, isFormValid,
-    onInputChange
+    formState, displayName, email,
+    password, onInputChange,
+    isFormValid, displayNameValid,
+    emailValid, passwordValid,
   } = useForm(formData, formValidations);
 
-  const onSubmitRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormSubmited(true);
-    console.log('Registrando usuario');
+  const onSubmit = (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+    setFormSubmitted(true);
+    if (!isFormValid) return;
+    dispatch<any>(startCreatingUserWithEmailPassword({ email, password, displayName }));
+    if (errorMessage) setShowErrorMessages(true);
   }
 
+  useEffect(() => {
+    setShowErrorMessages(false);
+  } , [email, password, displayName])
+
   return (
-    <AuthLayout title="Registro">
-      <form onSubmit={onSubmitRegister}>
-        <h1>formvaliddd :::: {isFormValid ? 'true' : 'false'}</h1>
+    <AuthLayout title="Crear cuenta">
+
+      <form onSubmit={onSubmit} className='animate__animated animate__fadeIn animate__faster'>
         <Grid container>
+
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
-              fullWidth
+              label="Nombre completo"
               type="text"
-              label="Nombre"
-              placeholder="Nombre"
+              placeholder='Nombre completo'
+              fullWidth
               name="displayName"
               value={displayName}
               onChange={onInputChange}
-              error={!!displayNameValid && formSubmited}
-              helperText={displayNameValid}
+              error={!!displayNameValid && formSubmitted}
+              helperText={!!displayNameValid && formSubmitted && displayNameValid}
             />
           </Grid>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
-              fullWidth
+              label="Correo"
               type="email"
-              label="Email"
-              placeholder="Email"
+              placeholder='correo@google.com'
+              fullWidth
               name="email"
               value={email}
               onChange={onInputChange}
-              error={!!emailValid && formSubmited}
-              helperText={emailValid}
+              error={!!emailValid && formSubmitted}
+              helperText={!!emailValid && formSubmitted && emailValid}
             />
           </Grid>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
-              fullWidth
+              label="Contraseña"
               type="password"
-              label="Constraseña"
-              placeholder="Constraseña"
+              placeholder='Contraseña'
+              fullWidth
               name="password"
               value={password}
               onChange={onInputChange}
-              error={!!passwordValid && formSubmited}
-              helperText={passwordValid}
+              error={!!passwordValid && formSubmitted}
+              helperText={!!passwordValid && formSubmitted && passwordValid}
             />
           </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={12} sx={{ mt: 2 }}>
-            <Button
-              fullWidth
-              variant="contained"
-              type="submit"
-            >Crear cuenta
-            </Button>
+          <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
+            {
+              showErrorMessages && 
+              <Grid
+              item
+              xs={12}
+              display={!!errorMessage ? '' : 'none'}
+            >
+              <Alert severity='error'>{errorMessage}</Alert>
+            </Grid>
+            }
+            <Grid item xs={12}>
+              <Button
+                disabled={isCheckingAuthentication}
+                type="submit"
+                variant='contained'
+                fullWidth>
+                Crear cuenta
+              </Button>
+            </Grid>
           </Grid>
-          <Grid container direction='row' justifyContent='end' sx={{ mt: 3 }}>
-            <Typography sx={{ mr: 1 }}>¿Ya tienes una cuenta?</Typography>
-            <Link component={RouterLink} color="inherit" to='/auth/login'>
+          <Grid container direction='row' justifyContent='end'>
+            <Typography sx={{ mr: 1 }}>¿Ya tienes cuenta?</Typography>
+            <Link component={RouterLink} color='inherit' to="/auth/login">
               ingresar
             </Link>
           </Grid>
