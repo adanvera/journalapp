@@ -1,5 +1,5 @@
 import { Google } from "@mui/icons-material"
-import { Alert, Button, CircularProgress, Grid, Link, TextField, Typography } from "@mui/material"
+import { Alert, Button, Grid, Link, TextField, Typography } from "@mui/material"
 import { Link as RouterLink } from "react-router-dom"
 import { AuthLayout } from "../layout/AuthLayout"
 import { useForm } from "../../hooks"
@@ -34,7 +34,6 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
-      <CircularProgress />
       <form onSubmit={onSubmit}>
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
