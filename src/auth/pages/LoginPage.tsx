@@ -1,24 +1,30 @@
 import { Google } from "@mui/icons-material"
-import { Button, Grid, Link, TextField, Typography } from "@mui/material"
+import { Alert, Button, CircularProgress, Grid, Link, TextField, Typography } from "@mui/material"
 import { Link as RouterLink } from "react-router-dom"
 import { AuthLayout } from "../layout/AuthLayout"
 import { useForm } from "../../hooks"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../../store"
-import { checkingCredentials, startGoogleSignIn } from "../../store/auth"
-import { useMemo } from "react"
+import { startGoogleSignIn, startLoginMailPassword } from "../../store/auth"
+import { useEffect, useMemo, useState } from "react"
 
 export const LoginPage = () => {
 
-  const { email, password, onInputChange } = useForm({ email: '', password: '' });
+  const { formState: { email, password }, onInputChange } = useForm({ email: '', password: '' });
   const dispatch: AppDispatch = useDispatch() // Type the dispatch
-  const { status } = useSelector((state: RootState) => state.auth) // Type the state
+  const { status, errorMessage } = useSelector((state: RootState) => state.auth) // Type the state
   const isAuthenticating = useMemo(() => status === 'checking', [status])
+  const [showError, setShowErrorMessages] = useState(false)
+  
+  useEffect(() => {
+    setShowErrorMessages(false);
+  } , [email, password])
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log(email, password)
-    dispatch(checkingCredentials())
+    dispatch(startLoginMailPassword(email, password))
+    if (errorMessage) setShowErrorMessages(true)
   }
 
   const onGoogleSignIn = () => {
@@ -28,6 +34,7 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
+      <CircularProgress />
       <form onSubmit={onSubmit}>
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
@@ -53,6 +60,20 @@ export const LoginPage = () => {
             />
           </Grid>
         </Grid>
+        {
+          showError &&
+          <Grid
+            container
+            display={!!errorMessage ? '' : 'none'}
+            sx={{ mt: 1 }}>
+            <Grid
+              item
+              xs={12}
+            >
+              <Alert severity='error'>{errorMessage}</Alert>
+            </Grid>
+          </Grid>
+        }
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={6} sx={{ mt: 2 }}>
             <Button

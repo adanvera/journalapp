@@ -1,7 +1,45 @@
-import { GoogleAuthProvider, signInWithPopup, getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { firebaseApp, firebaseAuth } from "./config";
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    signInWithEmailAndPassword
+} from "firebase/auth";
+import { firebaseAuth } from "./config";
+import { FirebaseError } from "firebase/app";
 
 const googleProvider = new GoogleAuthProvider();
+
+export const signInWithEmailPassword = async (mail: string, password: string) => {
+    try {
+        const result = await signInWithEmailAndPassword(firebaseAuth, mail, password);
+        const { displayName, email, photoURL, uid } = result.user;
+        return {
+            ok: true,
+            displayName,
+            email,
+            photoURL,
+            uid
+        }
+    } catch (error) {
+        console.error("Error al iniciar sesión:", error); // Esto te dará más detalles
+        if (error instanceof FirebaseError) {
+            const errorCode = (error as FirebaseError).code;
+            const errorMessage = error.message;
+            return {
+                ok: false,
+                errorCode,
+                errorMessage
+            }
+        } else {
+            return {
+                ok: false,
+                errorCode: 'unknown-error',
+                errorMessage: 'An unknown error occurred'
+            }
+        }
+    }
+}
 
 export const signInWithGoogle = async () => {
     try {
@@ -18,14 +56,22 @@ export const signInWithGoogle = async () => {
             }
         }
     } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        return {
-            ok: false,
-            errorCode,
-            errorMessage
+        console.error("Error al iniciar sesión con Google:", error); // Esto te dará más detalles
+        if (error instanceof FirebaseError) {
+            const errorCode = (error as FirebaseError).code;
+            const errorMessage = error.message;
+            return {
+                ok: false,
+                errorCode,
+                errorMessage
+            }
+        } else {
+            return {
+                ok: false,
+                errorCode: 'unknown-error',
+                errorMessage: 'An unknown error occurred'
+            }
         }
-
     }
 }
 
@@ -44,13 +90,21 @@ export const registerUSerWithEmailPassword = async (mail: string, password: stri
             uid
         }
     } catch (error) {
-        console.error("Error al registrar usuario:", error); // Esto te dará más detalles
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        return {
-            ok: false,
-            errorCode,
-            errorMessage
+        console.error("Error al crear usuario:", error); // Esto te dará más detalles
+        if (error instanceof FirebaseError) {
+            const errorCode = (error as FirebaseError).code;
+            const errorMessage = error.message;
+            return {
+                ok: false,
+                errorCode,
+                errorMessage
+            }
+        } else {
+            return {
+                ok: false,
+                errorCode: 'unknown-error',
+                errorMessage: 'An unknown error occurred'
+            }
         }
     }
 }
