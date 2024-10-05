@@ -108,3 +108,7 @@ export const registerUSerWithEmailPassword = async (mail: string, password: stri
         }
     }
 }
+
+export const logoutFirebase = async () => {
+    return firebaseAuth.signOut();
+}

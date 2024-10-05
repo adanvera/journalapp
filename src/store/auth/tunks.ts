@@ -1,4 +1,5 @@
 import {
+    logoutFirebase,
     registerUSerWithEmailPassword,
     signInWithEmailPassword,
     signInWithGoogle
@@ -55,5 +56,13 @@ export const startCreatingUserWithEmailPassword = ({ email, password, displayNam
             photoURL: result.photoURL,
             uid: result.uid
         }))
+    }
+}
+
+export const startLogout = () => {
+    return async (dispatch: any) => {
+        dispatch(checkingCredentials());
+        await logoutFirebase();
+        dispatch(logout({}));
     }
 }

@@ -15,10 +15,10 @@ export const LoginPage = () => {
   const { status, errorMessage } = useSelector((state: RootState) => state.auth) // Type the state
   const isAuthenticating = useMemo(() => status === 'checking', [status])
   const [showError, setShowErrorMessages] = useState(false)
-  
+
   useEffect(() => {
     setShowErrorMessages(false);
-  } , [email, password])
+  }, [email, password])
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,7 +34,9 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit}
+        className="animate__animated animate__fadeIn animate__faster"
+      >
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField

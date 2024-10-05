@@ -17,7 +17,6 @@ export const AuthLayout = ({
             direction="column"
             alignItems="center"
             justifyContent="center"
-
             sx={{
                 minHeight: '100vh',
                 backgroundColor: 'primary.main',
