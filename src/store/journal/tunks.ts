@@ -1,6 +1,6 @@
 import { collection, doc, setDoc } from "firebase/firestore/lite";
 import { firebaseBD } from "../../firebase";
-import { addNewEmptyNote, savingNewNote, setActiveNote, setNotes, setSaving, updateNote } from "./journalSlice";
+import { addNewEmptyNote, savingNewNote, setActiveNote, setImagesToNotes, setNotes, setSaving, updateNote } from "./journalSlice";
 import { fileUpload, loadNotes } from "../../helpers";
 
 interface AuthState {
@@ -66,7 +66,31 @@ export const startUploadingFiles = (files: File[]) => {
         const { uid } = getState().auth;
         const { active: note } = getState().journal;
 
-        await fileUpload(files[0]);
+        try {
+            const fileUploadPromises = files.map(file => fileUpload(file));
+            const urlImages = await Promise.all(fileUploadPromises);
+            if (Array.isArray(urlImages)) {
+                dispatch(setImagesToNotes({ urlImages }));
+            } else {
+                console.error("urlImages no es un array:", urlImages);
+            }
 
+            const { auth: { uid } } = getState();
+            const { active: note } = getState().journal;
+
+            const noteToFireStore = { ...note };
+            delete noteToFireStore.id;
+
+            const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
+
+            await setDoc(docRef, noteToFireStore, { merge: true });
+            dispatch(updateNote({
+                ...note,
+                id: note.id || '',
+                urlImages
+            }));
+        } catch (error) {
+            console.error("Error subiendo archivos:", error);
+        }
     }
 };

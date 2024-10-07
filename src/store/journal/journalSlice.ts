@@ -48,7 +48,7 @@ export const journalSlice = createSlice({
             state.isSaving = false;
             state.notes = action.payload;
         },
-        setSaving: (state ) => {
+        setSaving: (state) => {
             state.isSaving = true;
             state.savedMessage = '';
         },
@@ -66,6 +66,19 @@ export const journalSlice = createSlice({
             state.savedMessage = 'Nota actualizada correctamente';
         },
         deleteNoteById: (state, action: PayloadAction<string>) => { },
+
+
+
+        setImagesToNotes: (state, action: PayloadAction<Note>) => {
+            if (state.active) {
+                state.active.urlImages = [...state.active.urlImages, ...action.payload.urlImages];
+            }
+            state.isSaving = false;
+        }
+
+
+
+
     }
 });
 
@@ -77,5 +90,6 @@ export const {
     setSaving,
     updateNote,
     deleteNoteById,
-    savingNewNote
+    savingNewNote,
+    setImagesToNotes
 } = journalSlice.actions;
