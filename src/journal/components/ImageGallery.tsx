@@ -1,14 +1,18 @@
-import { useTheme } from "@emotion/react";
+import { useTheme } from "@mui/material/styles";
 import { AddAPhotoOutlined } from "@mui/icons-material";
-import { Grid, ImageList, ImageListItem } from "@mui/material";
+import { Grid, ImageList, ImageListItem, Theme } from "@mui/material";
 import { createRef } from "react";
 import { startUploadingFiles } from "../../store/journal";
 import { useDispatch } from "react-redux";
 
 
-export const ImageGallery = ({ images }) => {
+interface ImageGalleryProps {
+  images: string[];
+}
 
-  const theme = useTheme();
+export const ImageGallery = ({ images }: ImageGalleryProps) => {
+
+  const theme: Theme = useTheme();
   const primaryColor = theme.palette.info.main || '';
   const dispatch = useDispatch();
   const inputFileRef = createRef<HTMLInputElement>();

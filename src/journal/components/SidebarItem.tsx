@@ -3,13 +3,13 @@ import { Grid, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveNote } from '../../store/journal';
-import { useTheme } from '@emotion/react';
+import { useTheme, Theme } from '@mui/material/styles';
 
 interface Note {
     title: string;
     body: string;
     id: string;
-    date: number | string | null | undefined;
+    date: number;
     urlImages: string[];
 }
 
@@ -36,7 +36,7 @@ export const SidebarItem = ({ note }: { note: Note }) => {
     }
 
     // access to the main primary color
-    const theme = useTheme();
+    const theme: Theme = useTheme();
     const primaryColor = theme.palette.primary.main || '';
     const mainColor = itemActive === id ? primaryColor : '';
 
