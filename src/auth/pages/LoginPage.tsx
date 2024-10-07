@@ -8,9 +8,14 @@ import { AppDispatch, RootState } from "../../store"
 import { startGoogleSignIn, startLoginMailPassword } from "../../store/auth"
 import { useEffect, useMemo, useState } from "react"
 
+const formData = {
+  email: '',
+  password: ''
+}
+
 export const LoginPage = () => {
 
-  const { formState: { email, password }, onInputChange } = useForm({ email: '', password: '' });
+  const { formState: { email, password }, onInputChange } = useForm(formData)
   const dispatch: AppDispatch = useDispatch() // Type the dispatch
   const { status, errorMessage } = useSelector((state: RootState) => state.auth) // Type the state
   const isAuthenticating = useMemo(() => status === 'checking', [status])
@@ -22,13 +27,11 @@ export const LoginPage = () => {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(email, password)
     dispatch(startLoginMailPassword(email, password))
     if (errorMessage) setShowErrorMessages(true)
   }
 
   const onGoogleSignIn = () => {
-    console.log('Google Sign In');
     dispatch(startGoogleSignIn())
   }
 
