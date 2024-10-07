@@ -1,6 +1,6 @@
-import { collection, doc, setDoc } from "firebase/firestore/lite";
+import { collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
 import { firebaseBD } from "../../firebase";
-import { addNewEmptyNote, savingNewNote, setActiveNote, setImagesToNotes, setNotes, setSaving, updateNote } from "./journalSlice";
+import { addNewEmptyNote, deleteNoteById, savingNewNote, setActiveNote, setImagesToNotes, setNotes, setSaving, updateNote } from "./journalSlice";
 import { fileUpload, loadNotes } from "../../helpers";
 
 interface AuthState {
@@ -92,3 +92,14 @@ export const startUploadingFiles = (files: File[]) => {
         }
     }
 };
+
+
+export const startDeletingNote = () => {
+    return async (dispatch: any, getState: () => { auth: AuthState; journal: JournalState; }) => {
+        const { auth: { uid } } = getState();
+        const { active: note } = getState().journal;
+        const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
+        const resp = await deleteDoc(docRef)
+        dispatch(deleteNoteById(note.id))
+    }
+}

@@ -1,10 +1,10 @@
-import { SaveOutlined, UploadOutlined } from '@mui/icons-material'
+import { DeleteOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material'
 import { Button, Divider, Grid, IconButton, Input, TextField, Typography } from '@mui/material'
 import { ImageGallery } from '../components'
 import { useForm } from '../../hooks'
 import { useDispatch, useSelector } from 'react-redux'
 import { createRef, useEffect, useMemo } from 'react'
-import { setActiveNote, startSaveNote, startUploadingFiles } from '../../store/journal'
+import { setActiveNote, startDeletingNote, startSaveNote, startUploadingFiles } from '../../store/journal'
 import Swal from 'sweetalert2'
 
 export const NoteView = () => {
@@ -47,6 +47,10 @@ export const NoteView = () => {
         dispatch(startUploadingFiles(files));
     }
 
+    const onDelete = () => {
+        dispatch(startDeletingNote())
+    }
+
     return (
         <Grid
             container
@@ -85,7 +89,7 @@ export const NoteView = () => {
                         style={{ display: 'none' }}
                         ref={inputFileRef}
                         accept="image/*" // Allow only images
-                        />
+                    />
                     <IconButton disabled={isSaving}
                         onClick={() => {
                             inputFileRef.current?.click();
@@ -173,9 +177,22 @@ export const NoteView = () => {
                     border: 1,
                     borderColor: 'primary.main',
                     width: '100%'
-                }}bold
+                }} bold
             />
             <ImageGallery images={note.urlImages} />
+            <Grid container>
+                <Button
+                    onClick={onDelete}
+                    sx={{
+                        mt: 2
+                    }}
+                    color='error'
+                    variant='outlined'
+                >
+                    <DeleteOutline />
+                    ELiminar nota
+                </Button>
+            </Grid>
         </Grid>
     )
 }
