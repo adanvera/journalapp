@@ -2,9 +2,16 @@ import { collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
 import { firebaseBD } from "../../firebase";
 import { addNewEmptyNote, deleteNoteById, savingNewNote, setActiveNote, setImagesToNotes, setNotes, setSaving, updateNote } from "./journalSlice";
 import { fileUpload, loadNotes } from "../../helpers";
+import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
 interface AuthState {
-    uid: string;
+    status: string;
+    uid: string | null;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+    errorMessage: string | null;
 }
 
 interface JournalState {
@@ -37,9 +44,13 @@ export const startNewNote = () => {
     };
 };
 
-export const startLoadingNotes = () => {
+export const startLoadingNotes = (): ThunkAction<void, RootState, unknown, AnyAction> => {
     return async (dispatch: any, getState: () => { auth: AuthState }) => {
         const { auth: { uid } } = getState();
+        if (!uid) {
+            console.error("User ID is null or undefined");
+            return;
+        }
         const loadedNotes = await loadNotes(uid);
         dispatch(setNotes(loadedNotes));
     };
