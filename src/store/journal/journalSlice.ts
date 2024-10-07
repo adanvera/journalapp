@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Note {
-    id: string;
+    id?: string;
     title: string;
     body: string;
     date: number;

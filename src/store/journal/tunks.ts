@@ -23,7 +23,7 @@ export const startNewNote = () => {
     return async (dispatch: any, getState: () => { auth: AuthState }) => {
         dispatch(savingNewNote());
         const { auth: { uid } } = getState();
-        const newNote = {
+        const newNote : Note = {
             title: '',
             body: '',
             date: new Date().getTime(),
