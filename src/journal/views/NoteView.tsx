@@ -1,5 +1,5 @@
 import { DeleteOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material'
-import { Button, Divider, Grid, IconButton, Input, TextField, Typography } from '@mui/material'
+import { Button, Divider, Grid, IconButton, TextField, Typography } from '@mui/material'
 import { ImageGallery } from '../components'
 import { useForm } from '../../hooks'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,7 +11,8 @@ export const NoteView = () => {
 
     const dispatch = useDispatch();
     const { active: note, savedMessage, isSaving } = useSelector((state: any) => state.journal);
-    const { body, title, onInputChange, date, formState } = useForm(note);
+    const { onInputChange, formState } = useForm(note);
+    const { title, body, date } = formState;
 
     const showDate = useMemo(() => {
         const newDate = new Date(date);
@@ -75,7 +76,6 @@ export const NoteView = () => {
                         fontWeight='bolt'
                         fontFamily={'Roboto'}
                         color='primary'
-                        fontWeight={'bold'}
                     >
                         {showDate}
                     </Typography>
@@ -177,7 +177,7 @@ export const NoteView = () => {
                     border: 1,
                     borderColor: 'primary.main',
                     width: '100%'
-                }} bold
+                }}
             />
             <ImageGallery images={note.urlImages} />
             <Grid container>

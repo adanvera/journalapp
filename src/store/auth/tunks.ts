@@ -23,7 +23,7 @@ export const startLoginMailPassword = (email: string, password: string) => {
     }
 }
 
-export const checkingAuthentications = (email: string, password: string) => {
+export const checkingAuthentications = () => {
     return async (dispatch: any) => {
         dispatch(checkingCredentials());
     }
