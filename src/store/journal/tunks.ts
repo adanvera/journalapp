@@ -100,6 +100,10 @@ export const startDeletingNote = () => {
         const { active: note } = getState().journal;
         const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
         const resp = await deleteDoc(docRef)
-        dispatch(deleteNoteById(note.id))
+        if (note.id) {
+            dispatch(deleteNoteById(note.id));
+        } else {
+            console.error("Note ID is undefined");
+        }
     }
 }
