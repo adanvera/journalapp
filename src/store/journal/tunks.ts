@@ -15,7 +15,7 @@ interface AuthState {
 }
 
 interface JournalState {
-    active: Note;
+    active: Note | null;
 }
 
 interface Note {
@@ -63,12 +63,24 @@ export const startSaveNote = () => {
         const { active: note } = getState().journal;
         const noteToFireStore = { ...note };
         delete noteToFireStore.id;
+        if (!note) {
+            console.error("Active note is null or undefined");
+            return;
+        }
         const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
         await setDoc(docRef, noteToFireStore, { merge: true });
-        dispatch(updateNote({
-            ...note,
-            id: note.id || ''
-        }));
+        if (note) {
+            dispatch(updateNote({
+                ...note,
+                id: note.id || '',
+                title: note.title || '',
+                body: note.body || '',
+                date: note.date || new Date().getTime(),
+                urlImages: note.urlImages || []
+            }));
+        } else {
+            console.error("Active note is null or undefined");
+        }
     }
 };
 
@@ -81,26 +93,41 @@ export const startUploadingFiles = (files: File[]) => {
         try {
             const fileUploadPromises = files.map(file => fileUpload(file));
             const urlImages = await Promise.all(fileUploadPromises);
+            const { auth: { uid } } = getState();
+            const { active: note } = getState().journal;
+
             if (Array.isArray(urlImages)) {
-                dispatch(setImagesToNotes({ urlImages }));
+                dispatch(setImagesToNotes({
+                    ...note,
+                    title: note?.title || '',
+                    body: note?.body || '',
+                    date: note?.date || new Date().getTime(),
+                    urlImages
+                }));
             } else {
                 console.error("urlImages no es un array:", urlImages);
             }
 
-            const { auth: { uid } } = getState();
-            const { active: note } = getState().journal;
-
             const noteToFireStore = { ...note };
             delete noteToFireStore.id;
-
+            if (!note) {
+                console.error("Active note is null or undefined");
+                return;
+            }
             const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
-
             await setDoc(docRef, noteToFireStore, { merge: true });
-            dispatch(updateNote({
-                ...note,
-                id: note.id || '',
-                urlImages
-            }));
+            if (note) {
+                dispatch(updateNote({
+                    ...note,
+                    id: note.id || '',
+                    title: note.title || '',
+                    body: note.body || '',
+                    date: note.date || new Date().getTime(),
+                    urlImages
+                }));
+            } else {
+                console.error("Active note is null or undefined");
+            }
         } catch (error) {
             console.error("Error subiendo archivos:", error);
         }
@@ -108,16 +135,20 @@ export const startUploadingFiles = (files: File[]) => {
 };
 
 
-export const startDeletingNote = () => {
+export const startDeletingNote = (): ThunkAction<void, RootState, unknown, AnyAction> => {
     return async (dispatch: any, getState: () => { auth: AuthState; journal: JournalState; }) => {
         const { auth: { uid } } = getState();
         const { active: note } = getState().journal;
-        const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
-        await deleteDoc(docRef)
-        if (note.id) {
-            dispatch(deleteNoteById(note.id));
+        if (note) {
+            const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
+            await deleteDoc(docRef)
+            if (note.id) {
+                dispatch(deleteNoteById(note.id));
+            } else {
+                console.error("Note ID is undefined");
+            }
         } else {
-            console.error("Note ID is undefined");
+            console.error("Active note is null or undefined");
         }
     }
 }
