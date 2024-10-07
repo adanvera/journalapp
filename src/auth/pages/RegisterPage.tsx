@@ -32,13 +32,8 @@ export const RegisterPage = () => {
   const { status, errorMessage } = useSelector((state: RootState) => state.auth);
   const isCheckingAuthentication = useMemo(() => status === 'checking', [status]);
   const [showErrorMessages, setShowErrorMessages] = useState(false);
-
-  const {
-    formState, displayName, email,
-    password, onInputChange,
-    isFormValid, displayNameValid,
-    emailValid, passwordValid,
-  } = useForm(formData, formValidations);
+  const { formState, onInputChange, isFormValid } = useForm(formData, formValidations);
+  const { displayName, email, password, displayNameValid, emailValid, passwordValid } = formState;
 
   const onSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
@@ -50,7 +45,7 @@ export const RegisterPage = () => {
 
   useEffect(() => {
     setShowErrorMessages(false);
-  } , [email, password, displayName])
+  }, [email, password, displayName])
 
   return (
     <AuthLayout title="Crear cuenta">
@@ -99,14 +94,14 @@ export const RegisterPage = () => {
           </Grid>
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
             {
-              showErrorMessages && 
+              showErrorMessages &&
               <Grid
-              item
-              xs={12}
-              display={!!errorMessage ? '' : 'none'}
-            >
-              <Alert severity='error'>{errorMessage}</Alert>
-            </Grid>
+                item
+                xs={12}
+                display={!!errorMessage ? '' : 'none'}
+              >
+                <Alert severity='error'>{errorMessage}</Alert>
+              </Grid>
             }
             <Grid item xs={12}>
               <Button
