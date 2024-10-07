@@ -1,16 +1,16 @@
-import { SaveOutlined, Start } from '@mui/icons-material'
-import { Button, Grid, TextField, Typography } from '@mui/material'
+import { SaveOutlined, UploadOutlined } from '@mui/icons-material'
+import { Button, Divider, Grid, IconButton, Input, TextField, Typography } from '@mui/material'
 import { ImageGallery } from '../components'
 import { useForm } from '../../hooks'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useMemo } from 'react'
-import { setActiveNote, startSaveNote } from '../../store/journal'
+import { createRef, useEffect, useMemo } from 'react'
+import { setActiveNote, startSaveNote, startUploadingFiles } from '../../store/journal'
 import Swal from 'sweetalert2'
 
 export const NoteView = () => {
 
     const dispatch = useDispatch();
-    const { active: note, savedMessage , isSaving} = useSelector((state: any) => state.journal);
+    const { active: note, savedMessage, isSaving } = useSelector((state: any) => state.journal);
     const { body, title, onInputChange, date, formState } = useForm(note);
 
     const showDate = useMemo(() => {
@@ -37,6 +37,16 @@ export const NoteView = () => {
         }
     }, [savedMessage]);
 
+    const inputFileRef = createRef<HTMLInputElement>();
+
+    const onFileChange = (e: any) => {
+        if (e.target.files.length === 0) {
+            return;
+        }
+        const files = Array.from(e.target.files);
+        dispatch(startUploadingFiles(files));
+    }
+
     return (
         <Grid
             container
@@ -48,33 +58,76 @@ export const NoteView = () => {
             }}
             className="animate__animated animate__fadeIn animate__faster"
         >
-            <Grid item >
-                <Typography fontSize={39} fontWeight='light'>
-                    {showDate}
-                </Typography>
-            </Grid>
-            <Grid item >
-                <Button
-                    color='primary'
-                    sx={{
-                        padding: 2
-                    }}
-                    onClick={onSaveNote}
-                    disabled={isSaving}
-                >
-                    <SaveOutlined
-                        sx={{
-                            mr: 1,
-                            fontSize: 30
-                        }}
+            <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+            >
+
+                <Grid item >
+                    <Typography
+                        fontSize={20}
+                        fontWeight='bolt'
+                        fontFamily={'Roboto'}
+                        color='primary'
+                        fontWeight={'bold'}
+                    >
+                        {showDate}
+                    </Typography>
+                </Grid>
+                <Grid item >
+                    <input
+                        type='file'
+                        id='file'
+                        multiple
+                        onChange={onFileChange}
+                        style={{ display: 'none' }}
+                        ref={inputFileRef}
                     />
-                    Guardar
-                </Button>
+                    <IconButton disabled={isSaving}
+                        onClick={() => {
+                            inputFileRef.current?.click();
+                        }}
+                    >
+                        <UploadOutlined
+                            color='primary'
+                            sx={{
+                                fontSize: 30
+                            }}
+                        />
+                    </IconButton>
+                    <Button
+                        color='primary'
+                        sx={{
+                            padding: 2
+                        }}
+                        onClick={onSaveNote}
+                        disabled={isSaving}
+                    >
+                        <SaveOutlined
+                            sx={{
+                                mr: 1,
+                                fontSize: 30
+                            }}
+                        />
+                        Guardar
+                    </Button>
+                </Grid>
             </Grid>
+            <Divider
+                sx={{
+                    mb: 5,
+                    border: 1,
+                    borderColor: 'primary.main',
+                    width: '100%'
+                }}
+
+            />
             <Grid container >
                 <TextField
                     type='text'
-                    variant='filled'
+                    variant='outlined'
                     fullWidth
                     placeholder='Título de la nota'
                     label='Título'
@@ -82,15 +135,16 @@ export const NoteView = () => {
                     name='title'
                     onChange={onInputChange}
                     sx={{
-                        mb: 1
+                        mb: 1,
+                        backgroundColor: 'white',
                     }}
                 />
                 <TextField
                     type='text'
-                    variant='filled'
+                    variant='outlined'
                     fullWidth
                     multiline
-                    placeholder='Que sucedio en el dia de hpy'
+                    placeholder='Agregar descripción aqui'
                     minRows={5}
                     name='body'
                     value={body}

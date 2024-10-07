@@ -1,8 +1,9 @@
 import { TurnedInNot } from '@mui/icons-material'
 import { Grid, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import { useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setActiveNote } from '../../store/journal';
+import { useTheme } from '@emotion/react';
 
 interface Note {
     title: string;
@@ -14,13 +15,15 @@ interface Note {
 
 export const SidebarItem = ({ note }: { note: Note }) => {
     const dispatch = useDispatch();
-    const { title, body, id, date, urlImages } = note;    
+    const { title, body, id, date, urlImages } = note;
+    const { active } = useSelector((state: any) => state.journal);
+    const itemActive = active && active.id === id ? active.id : '';
 
     const newTitle = useMemo(() => {
-        if(title){
+        if (title) {
             return title?.length > 12 ? title?.substring(0, 12) + '...' : title
         }
-    } , [title]);
+    }, [title]);
 
     const onClickNote = () => {
         dispatch(setActiveNote({
@@ -32,9 +35,25 @@ export const SidebarItem = ({ note }: { note: Note }) => {
         }));
     }
 
+    // access to the main primary color
+    const theme = useTheme();
+    const primaryColor = theme.palette.primary.main || '';
+    const mainColor = itemActive === id ? primaryColor : '';
+
     return (
-        <ListItem disablePadding >
-            <ListItemButton onClick={onClickNote}>
+        <ListItem disablePadding 
+            sx={{
+                borderRight: itemActive === id ? `6px solid ${primaryColor}` : '6px solid transparent',
+                borderLeft: itemActive === id ? `6px solid ${primaryColor}` : '6px solid transparent',
+                transition: 'border-left 0.3s',
+                backgroundColor: itemActive === id ? 'rgba(0,0,0,0.04)' : 'transparent',
+            }}
+        >
+            <ListItemButton onClick={onClickNote}
+                sx={{
+                    color: mainColor,
+                }}
+            >
                 <ListItemButton>
                     <TurnedInNot />
                 </ListItemButton>
