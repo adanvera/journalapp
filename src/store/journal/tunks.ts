@@ -63,8 +63,6 @@ export const startSaveNote = () => {
 export const startUploadingFiles = (files: File[]) => {
     return async (dispatch: any, getState: () => { auth: AuthState; journal: JournalState; }) => {
         dispatch(setSaving());
-        const { uid } = getState().auth;
-        const { active: note } = getState().journal;
 
         try {
             const fileUploadPromises = files.map(file => fileUpload(file));

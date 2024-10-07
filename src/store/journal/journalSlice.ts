@@ -61,24 +61,15 @@ export const journalSlice = createSlice({
                     return note;
                 }
             });
-
-            //TODO mostrar mensaje de guardado
             state.savedMessage = 'Nota actualizada correctamente';
         },
         deleteNoteById: (state, action: PayloadAction<string>) => { },
-
-
-
         setImagesToNotes: (state, action: PayloadAction<Note>) => {
             if (state.active) {
                 state.active.urlImages = [...state.active.urlImages, ...action.payload.urlImages];
             }
             state.isSaving = false;
         }
-
-
-
-
     }
 });
 

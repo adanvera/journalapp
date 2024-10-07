@@ -84,7 +84,8 @@ export const NoteView = () => {
                         onChange={onFileChange}
                         style={{ display: 'none' }}
                         ref={inputFileRef}
-                    />
+                        accept="image/*" // Allow only images
+                        />
                     <IconButton disabled={isSaving}
                         onClick={() => {
                             inputFileRef.current?.click();
@@ -124,7 +125,11 @@ export const NoteView = () => {
                 }}
 
             />
-            <Grid container >
+            <Grid container
+                sx={{
+                    mb: 5
+                }}
+            >
                 <TextField
                     type='text'
                     variant='outlined'
@@ -151,9 +156,26 @@ export const NoteView = () => {
                     onChange={onInputChange}
                 />
             </Grid>
-
-            <ImageGallery />
-
+            <Grid item >
+                <Typography
+                    fontSize={20}
+                    fontWeight='bolt'
+                    fontFamily={'Roboto'}
+                    color='primary'
+                >
+                    Imagenes
+                </Typography>
+            </Grid>
+            <Divider
+                sx={{
+                    mt: 1,
+                    mb: 5,
+                    border: 1,
+                    borderColor: 'primary.main',
+                    width: '100%'
+                }}bold
+            />
+            <ImageGallery images={note.urlImages} />
         </Grid>
     )
 }
