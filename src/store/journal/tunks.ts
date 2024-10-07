@@ -54,7 +54,10 @@ export const startSaveNote = () => {
         delete noteToFireStore.id;
         const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
         await setDoc(docRef, noteToFireStore, { merge: true });
-        dispatch(updateNote(note));
+        dispatch(updateNote({
+            ...note,
+            id: note.id || ''
+        }));
     }
 };
 
@@ -99,7 +102,7 @@ export const startDeletingNote = () => {
         const { auth: { uid } } = getState();
         const { active: note } = getState().journal;
         const docRef = doc(firebaseBD, `${uid}/journal/notes/${note.id}`);
-        const resp = await deleteDoc(docRef)
+        await deleteDoc(docRef)
         if (note.id) {
             dispatch(deleteNoteById(note.id));
         } else {
