@@ -44,7 +44,7 @@ export const startNewNote = () => {
     };
 };
 
-export const startLoadingNotes = (): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const startLoadingNotes = () => {
     return async (dispatch: any, getState: () => { auth: AuthState }) => {
         const { auth: { uid } } = getState();
         if (!uid) {

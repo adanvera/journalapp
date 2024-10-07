@@ -1,9 +1,14 @@
 import { Box, Toolbar } from '@mui/material'
 import { Navbar, Sidebar } from '../components';
+import { ReactNode } from 'react';
 
 const drawerWidth = 240;
 
-export const JournalLayout = ({ children }) => {
+interface JournalLayoutProps {
+    children: ReactNode;
+}
+
+export const JournalLayout = ({ children }: JournalLayoutProps) => {
     return (
         <Box sx={{ display: 'flex' }}
             className="animate__animated animate__fadeIn animate__faster"

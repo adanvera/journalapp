@@ -3,13 +3,14 @@ import { Button, Divider, Grid, IconButton, TextField, Typography } from '@mui/m
 import { ImageGallery } from '../components'
 import { useForm } from '../../hooks'
 import { useDispatch, useSelector } from 'react-redux'
+import {  AppDispatch } from '../../store'
 import { createRef, useEffect, useMemo } from 'react'
 import { setActiveNote, startDeletingNote, startSaveNote, startUploadingFiles } from '../../store/journal'
 import Swal from 'sweetalert2'
 
 export const NoteView = () => {
 
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
     const { active: note, savedMessage, isSaving } = useSelector((state: any) => state.journal);
     const { onInputChange, formState } = useForm(note);
     const { title, body, date } = formState;
@@ -21,7 +22,13 @@ export const NoteView = () => {
     }, [date]);
 
     useEffect(() => {
-        dispatch(setActiveNote(formState));
+        dispatch(setActiveNote({
+            ...formState,
+            title: formState.title || '',
+            body: formState.body || '',
+            date: formState.date || new Date().toISOString(),
+            urlImages: formState.urlImages || []
+        }));
     }, [formState]);
 
     const onSaveNote = () => {
@@ -44,7 +51,7 @@ export const NoteView = () => {
         if (e.target.files.length === 0) {
             return;
         }
-        const files = Array.from(e.target.files);
+        const files: File[] = Array.from(e.target.files) as File[];
         dispatch(startUploadingFiles(files));
     }
 

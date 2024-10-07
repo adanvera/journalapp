@@ -4,6 +4,7 @@ import { Grid, ImageList, ImageListItem, Theme } from "@mui/material";
 import { createRef } from "react";
 import { startUploadingFiles } from "../../store/journal";
 import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store";
 
 
 interface ImageGalleryProps {
@@ -14,14 +15,14 @@ export const ImageGallery = ({ images }: ImageGalleryProps) => {
 
   const theme: Theme = useTheme();
   const primaryColor = theme.palette.info.main || '';
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const inputFileRef = createRef<HTMLInputElement>();
 
   const onFileChange = (e: any) => {
     if (e.target.files.length === 0) {
       return;
     }
-    const files = Array.from(e.target.files);
+    const files: File[] = Array.from(e.target.files) as File[];
     dispatch(startUploadingFiles(files));
   }
 
