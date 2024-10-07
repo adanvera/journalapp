@@ -11,6 +11,9 @@ export const purpleTheme = createTheme({
         },
         error: {
             main: red[500],
+        },
+        info:{
+            main: purple[50]
         }
-    },
+    }
 });
